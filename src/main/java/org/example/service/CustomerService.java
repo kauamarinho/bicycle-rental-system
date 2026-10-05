@@ -1,5 +1,7 @@
 package org.example.service;
 
+import org.springframework.stereotype.Service;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.example.domain.model.Customer;
 import org.example.domain.vo.Cpf;
 import org.example.domain.vo.Email;
@@ -7,10 +9,11 @@ import org.example.repository.CustomerRepository;
 
 import java.util.List;
 
+@Service
 public class CustomerService {
 
     private CustomerRepository customerRepository;
-    private int nextId = 1;
+    private final AtomicInteger nextId = new AtomicInteger(1);
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -19,7 +22,7 @@ public class CustomerService {
     public Customer registerCustomer(String name, String cpf, String email) {
 
         Customer customer = new Customer(
-                nextId++,
+                nextId.getAndIncrement(),
                 name,
                 new Cpf(cpf),
                 new Email(email)

@@ -4,7 +4,7 @@
 ![Maven](https://img.shields.io/badge/Maven-Build-blue?logo=apachemaven)
 ![JUnit5](https://img.shields.io/badge/Tests-JUnit5-25A162?logo=junit5)
 
-A Java console application for managing bicycle rentals, including customer registration, reservations, rentals, returns, and payments.
+A Spring Boot REST API for managing bicycle rentals, including customer registration, reservations, rentals, returns, and payments.
 
 The project is organized to cleanly separate the console interface, the domain, and the in-memory infrastructure, and already includes automated tests for the services.
 
@@ -16,17 +16,18 @@ The project is organized to cleanly separate the console interface, the domain, 
 - Bicycle rental and return with hourly rate calculation
 - Rental payment with receipt generation
 - Automatic bicycle status control
-- Interactive terminal menu
+- REST API (Spring Boot) with JSON responses
 
 ## 📁 Project structure
 
 ```
 src/main/java/org/example/
-├── application/
-│   ├── Main.java
-│   └── ConsoleMenu.java
-├── config/
-│   └── AppConfig.java
+├── BicycleRentalApplication.java
+├── controller/
+│   ├── *Controller.java
+│   ├── GlobalExceptionHandler.java
+│   ├── InitialDataLoader.java
+│   └── dto/ApiDtos.java
 ├── domain/
 │   ├── model/
 │   │   ├── Administrator.java
@@ -135,3 +136,12 @@ Typical flow:
 ## 👤 Author
 
 Kauã Marinho
+
+## 🚀 Running the API
+
+```
+./mvnw spring-boot:run
+```
+
+Endpoints (default port 8080): `GET/POST /customers`, `GET /bicycles`, `GET/POST /rentals`,
+`POST /rentals/{id}/return`, `POST /rentals/{id}/payment`, `GET/POST /reservations`, `POST /reservations/{id}/cancel`.

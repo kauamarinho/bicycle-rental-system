@@ -1,5 +1,7 @@
 package org.example.service;
 
+import org.springframework.stereotype.Service;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.example.domain.exception.RentalException;
 import org.example.domain.model.Bicycle;
 import org.example.domain.model.Customer;
@@ -9,10 +11,11 @@ import org.example.repository.ReservationRepository;
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 public class ReservationService {
 
     private ReservationRepository reservationRepository;
-    private int nextId = 1;
+    private final AtomicInteger nextId = new AtomicInteger(1);
 
     public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
@@ -22,7 +25,7 @@ public class ReservationService {
         if (!bicycle.isAvailable()) {
             throw new RentalException("Bicycle is not available for reservation.");
         }
-        Reservation reservation = new Reservation(nextId++, customer, bicycle, reservationDate);
+        Reservation reservation = new Reservation(nextId.getAndIncrement(), customer, bicycle, reservationDate);
         customer.addReservation(reservation);
         reservationRepository.save(reservation);
         return reservation;

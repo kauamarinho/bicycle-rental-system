@@ -1,5 +1,7 @@
 package org.example.service;
 
+import org.springframework.stereotype.Service;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.example.domain.exception.RentalException;
 import org.example.domain.model.Bicycle;
 import org.example.domain.model.Customer;
@@ -11,10 +13,11 @@ import org.example.repository.RentalRepository;
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 public class RentalService {
 
     private RentalRepository rentalRepository;
-    private int nextId = 1;
+    private final AtomicInteger nextId = new AtomicInteger(1);
 
     public RentalService(RentalRepository rentalRepository) {
         this.rentalRepository = rentalRepository;
@@ -31,7 +34,7 @@ public class RentalService {
         }
 
         Rental rental = new Rental(
-                nextId++,
+                nextId.getAndIncrement(),
                 customer,
                 bicycle,
                 pickupDate

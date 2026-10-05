@@ -1,11 +1,13 @@
 package org.example.repository.inmemory;
 
+import org.springframework.stereotype.Repository;
 import org.example.domain.model.Customer;
 import org.example.repository.CustomerRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class InMemoryCustomerRepository implements CustomerRepository {
 
     private final List<Customer> customers = new ArrayList<>();
@@ -17,7 +19,7 @@ public class InMemoryCustomerRepository implements CustomerRepository {
 
     @Override
     public List<Customer> findAll() {
-        return customers;
+        return List.copyOf(customers);
     }
 
     @Override
