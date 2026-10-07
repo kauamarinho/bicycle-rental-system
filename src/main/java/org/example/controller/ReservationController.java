@@ -1,7 +1,8 @@
 package org.example.controller;
 
-import org.example.controller.dto.ApiDtos.ReservationRequest;
-import org.example.controller.dto.ApiDtos.ReservationResponse;
+import lombok.RequiredArgsConstructor;
+import org.example.dto.ApiDtos.ReservationRequest;
+import org.example.dto.ApiDtos.ReservationResponse;
 import org.example.domain.exception.NotFoundException;
 import org.example.domain.model.Bicycle;
 import org.example.domain.model.Customer;
@@ -14,20 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservations")
+@RequestMapping("/v1/reservations")
+@RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService reservationService;
     private final CustomerService customerService;
     private final BicycleService bicycleService;
-
-    public ReservationController(ReservationService reservationService,
-                                 CustomerService customerService,
-                                 BicycleService bicycleService) {
-        this.reservationService = reservationService;
-        this.customerService = customerService;
-        this.bicycleService = bicycleService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

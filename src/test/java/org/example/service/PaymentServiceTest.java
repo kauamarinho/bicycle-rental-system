@@ -20,7 +20,8 @@ class PaymentServiceTest {
     @BeforeEach
     void setUp() {
         paymentService = new PaymentService();
-        customer = new Customer(1, "Ana", new Cpf("12345678901"), new Email("ana@email.com"));
+        customer = new Customer(1, "Ana", new Cpf("12345678901"), new Email("ana@email.com"),
+                new Address("01001000", "Praça da Sé", "Sé", "São Paulo", "SP"));
         bicycle = new Bicycle(1, "Aro 29", BicycleStatus.AVAILABLE, 5.0);
     }
 

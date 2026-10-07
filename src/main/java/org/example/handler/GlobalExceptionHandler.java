@@ -1,6 +1,8 @@
-package org.example.controller;
+package org.example.handler;
 
-import org.example.controller.dto.ApiDtos.ErrorResponse;
+import org.example.dto.ApiDtos.ErrorResponse;
+import org.example.domain.exception.AddressLookupException;
+import org.example.domain.exception.InvalidCepException;
 import org.example.domain.exception.InvalidCpfException;
 import org.example.domain.exception.InvalidEmailException;
 import org.example.domain.exception.NotFoundException;
@@ -23,8 +25,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler({InvalidCpfException.class, InvalidEmailException.class})
+    @ExceptionHandler({InvalidCpfException.class, InvalidEmailException.class, InvalidCepException.class})
     public ResponseEntity<ErrorResponse> handleInvalidInput(RuntimeException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(AddressLookupException.class)
+    public ResponseEntity<ErrorResponse> handleAddressLookup(AddressLookupException e) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(new ErrorResponse(e.getMessage()));
     }
 }

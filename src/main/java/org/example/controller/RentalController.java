@@ -1,10 +1,11 @@
 package org.example.controller;
 
-import org.example.controller.dto.ApiDtos.PaymentRequest;
-import org.example.controller.dto.ApiDtos.PaymentResponse;
-import org.example.controller.dto.ApiDtos.RentalRequest;
-import org.example.controller.dto.ApiDtos.RentalResponse;
-import org.example.controller.dto.ApiDtos.ReturnRequest;
+import lombok.RequiredArgsConstructor;
+import org.example.dto.ApiDtos.PaymentRequest;
+import org.example.dto.ApiDtos.PaymentResponse;
+import org.example.dto.ApiDtos.RentalRequest;
+import org.example.dto.ApiDtos.RentalResponse;
+import org.example.dto.ApiDtos.ReturnRequest;
 import org.example.domain.exception.NotFoundException;
 import org.example.domain.model.Bicycle;
 import org.example.domain.model.Customer;
@@ -19,23 +20,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rentals")
+@RequestMapping("/v1/rentals")
+@RequiredArgsConstructor
 public class RentalController {
 
     private final RentalService rentalService;
     private final PaymentService paymentService;
     private final CustomerService customerService;
     private final BicycleService bicycleService;
-
-    public RentalController(RentalService rentalService,
-                            PaymentService paymentService,
-                            CustomerService customerService,
-                            BicycleService bicycleService) {
-        this.rentalService = rentalService;
-        this.paymentService = paymentService;
-        this.customerService = customerService;
-        this.bicycleService = bicycleService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

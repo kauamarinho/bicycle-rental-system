@@ -1,5 +1,6 @@
-package org.example.controller;
+package org.example.config;
 
+import lombok.RequiredArgsConstructor;
 import org.example.service.BicycleService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -8,13 +9,10 @@ import org.springframework.stereotype.Component;
  * Seeds the in-memory repositories with the bicycles available at startup.
  */
 @Component
+@RequiredArgsConstructor
 public class InitialDataLoader implements CommandLineRunner {
 
     private final BicycleService bicycleService;
-
-    public InitialDataLoader(BicycleService bicycleService) {
-        this.bicycleService = bicycleService;
-    }
 
     @Override
     public void run(String... args) {

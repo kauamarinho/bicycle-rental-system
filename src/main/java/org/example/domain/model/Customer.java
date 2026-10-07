@@ -12,13 +12,15 @@ public class Customer implements Registrable {
     private String name;
     private Cpf cpf;
     private Email email;
+    private Address address;
     private List<Reservation> reservations;
 
-    public Customer(int id, String name, Cpf cpf, Email email) {
+    public Customer(int id, String name, Cpf cpf, Email email, Address address) {
         this.id = id;
         this.name = name;
         this.cpf = cpf;
         this.email = email;
+        this.address = address;
         this.reservations = new ArrayList<>();
     }
 
@@ -35,7 +37,8 @@ public class Customer implements Registrable {
         return "ID: " + id
                 + " | Name: " + name
                 + " | CPF: " + cpf
-                + " | Email: " + email;
+                + " | Email: " + email
+                + " | CEP: " + address.cep();
     }
 
     @Override
@@ -54,5 +57,9 @@ public class Customer implements Registrable {
 
     public String getEmail() {
         return email.getValue();
+    }
+
+    public Address getAddress() {
+        return address;
     }
 }

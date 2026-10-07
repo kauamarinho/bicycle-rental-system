@@ -1,5 +1,6 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.example.domain.model.Bicycle;
@@ -8,14 +9,11 @@ import org.example.repository.BicycleRepository;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BicycleService {
 
-    private BicycleRepository bicycleRepository;
+    private final BicycleRepository bicycleRepository;
     private final AtomicInteger nextId = new AtomicInteger(1);
-
-    public BicycleService(BicycleRepository bicycleRepository) {
-        this.bicycleRepository = bicycleRepository;
-    }
 
     public Bicycle registerBicycle(String model, double hourlyRate) {
         Bicycle bicycle = new Bicycle(nextId.getAndIncrement(), model, BicycleStatus.AVAILABLE, hourlyRate);

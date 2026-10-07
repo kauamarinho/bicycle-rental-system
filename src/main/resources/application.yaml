@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: bicycle-rental-system
+
+viacep:
+  base-url: https://viacep.com.br/ws

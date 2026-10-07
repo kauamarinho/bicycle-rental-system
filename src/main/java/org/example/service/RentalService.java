@@ -1,5 +1,6 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.example.domain.exception.RentalException;
@@ -14,14 +15,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RentalService {
 
-    private RentalRepository rentalRepository;
+    private final RentalRepository rentalRepository;
     private final AtomicInteger nextId = new AtomicInteger(1);
-
-    public RentalService(RentalRepository rentalRepository) {
-        this.rentalRepository = rentalRepository;
-    }
 
     public Rental rentBicycle(Customer customer, Bicycle bicycle, LocalDate pickupDate) {
 

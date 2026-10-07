@@ -1,9 +1,10 @@
-package org.example.controller.dto;
+package org.example.dto;
 
 import org.example.domain.enums.BicycleStatus;
 import org.example.domain.enums.PaymentMethod;
 import org.example.domain.enums.RentalStatus;
 import org.example.domain.enums.ReservationStatus;
+import org.example.domain.model.Address;
 import org.example.domain.model.Bicycle;
 import org.example.domain.model.Customer;
 import org.example.domain.model.Payment;
@@ -19,7 +20,7 @@ public final class ApiDtos {
     }
 
     // ---- requests ----
-    public record CustomerRequest(String name, String cpf, String email) {}
+    public record CustomerRequest(String name, String cpf, String email, String cep) {}
 
     public record ReservationRequest(int customerId, int bicycleId, LocalDate reservationDate) {}
 
@@ -32,9 +33,16 @@ public final class ApiDtos {
     public record ErrorResponse(String message) {}
 
     // ---- responses ----
-    public record CustomerResponse(int id, String name, String cpf, String email) {
+    public record AddressResponse(String cep, String street, String neighborhood, String city, String state) {
+        public static AddressResponse from(Address a) {
+            return new AddressResponse(a.cep(), a.street(), a.neighborhood(), a.city(), a.state());
+        }
+    }
+
+    public record CustomerResponse(int id, String name, String cpf, String email, AddressResponse address) {
         public static CustomerResponse from(Customer c) {
-            return new CustomerResponse(c.getId(), c.getName(), c.getCpf(), c.getEmail());
+            return new CustomerResponse(c.getId(), c.getName(), c.getCpf(), c.getEmail(),
+                    AddressResponse.from(c.getAddress()));
         }
     }
 
@@ -52,10 +60,12 @@ public final class ApiDtos {
         }
     }
 
-    public record RentalResponse(int id, int customerId, int bicycleId, LocalDate pickupDate,
-                                 LocalDate returnDate, double totalAmount, RentalStatus status) {
+    public record RentalResponse(int id, int customerId, AddressResponse customerAddress, int bicycleId,
+                                 LocalDate pickupDate, LocalDate returnDate, double totalAmount,
+                                 RentalStatus status) {
         public static RentalResponse from(Rental r) {
-            return new RentalResponse(r.getId(), r.getCustomer().getId(), r.getBicycle().getId(),
+            return new RentalResponse(r.getId(), r.getCustomer().getId(),
+                    AddressResponse.from(r.getCustomer().getAddress()), r.getBicycle().getId(),
                     r.getPickupDate(), r.getReturnDate(), r.getTotalAmount(), r.getStatus());
         }
     }

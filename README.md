@@ -11,6 +11,7 @@ The project is organized to cleanly separate the console interface, the domain, 
 ## ✨ Features
 
 - Customer registration with CPF and email validation
+- Address lookup by CEP (ViaCEP), stored on the customer and shown on rentals
 - Listing of customers and bicycles
 - Reservation and cancellation of reservations
 - Bicycle rental and return with hourly rate calculation
@@ -23,13 +24,20 @@ The project is organized to cleanly separate the console interface, the domain, 
 ```
 src/main/java/org/example/
 ├── BicycleRentalApplication.java
+├── client/
+│   ├── CepClient.java
+│   └── viacep/ViaCepClient.java
+├── config/
+│   └── InitialDataLoader.java
 ├── controller/
-│   ├── *Controller.java
-│   ├── GlobalExceptionHandler.java
-│   ├── InitialDataLoader.java
-│   └── dto/ApiDtos.java
+│   └── *Controller.java
+├── dto/
+│   └── ApiDtos.java
+├── handler/
+│   └── GlobalExceptionHandler.java
 ├── domain/
 │   ├── model/
+│   │   ├── Address.java
 │   │   ├── Administrator.java
 │   │   ├── Bicycle.java
 │   │   ├── Registrable.java
@@ -39,6 +47,7 @@ src/main/java/org/example/
 │   │   ├── Payment.java
 │   │   └── Reservation.java
 │   ├── vo/
+│   │   ├── Cep.java
 │   │   ├── Cpf.java
 │   │   └── Email.java
 │   ├── enums/
@@ -47,6 +56,9 @@ src/main/java/org/example/
 │   │   ├── RentalStatus.java
 │   │   └── ReservationStatus.java
 │   └── exception/
+│       ├── AddressLookupException.java
+│       ├── InvalidCepException.java
+│       ├── NotFoundException.java
 │       ├── RentalException.java
 │       ├── InvalidCpfException.java
 │       └── InvalidEmailException.java
@@ -61,13 +73,16 @@ src/main/java/org/example/
 │       ├── InMemoryRentalRepository.java
 │       └── InMemoryReservationRepository.java
 └── service/
+    ├── AddressService.java
     ├── BicycleService.java
     ├── CustomerService.java
     ├── RentalService.java
     ├── PaymentService.java
     └── ReservationService.java
 
-src/test/java/org/example/service/
+src/test/java/org/example/
+├── client/viacep/ViaCepClientTest.java
+└── service/
 ├── CustomerServiceTest.java
 ├── RentalServiceTest.java
 ├── PaymentServiceTest.java
@@ -120,6 +135,7 @@ Typical flow:
 
 - CPF must contain 11 numeric digits, ignoring dots and dashes
 - Email must be valid
+- CEP must contain 8 numeric digits (dash is ignored) and must exist in ViaCEP
 - Only available bicycles can be reserved
 - Only bicycles that are not rented or removed can be rented out
 - Returns require hours greater than zero
@@ -143,5 +159,15 @@ Kauã Marinho
 ./mvnw spring-boot:run
 ```
 
-Endpoints (default port 8080): `GET/POST /customers`, `GET /bicycles`, `GET/POST /rentals`,
-`POST /rentals/{id}/return`, `POST /rentals/{id}/payment`, `GET/POST /reservations`, `POST /reservations/{id}/cancel`.
+Endpoints (default port 8080, all under `/v1`): `GET/POST /v1/customers`, `GET /v1/bicycles`,
+`GET/POST /v1/rentals`, `POST /v1/rentals/{id}/return`, `POST /v1/rentals/{id}/payment`,
+`GET/POST /v1/reservations`, `POST /v1/reservations/{id}/cancel`, `GET /v1/addresses/{cep}`.
+
+Registering a customer now requires a `cep`; the address is fetched from ViaCEP:
+
+```json
+POST /v1/customers
+{ "name": "Ana", "cpf": "123.456.789-01", "email": "ana@email.com", "cep": "01310-100" }
+```
+
+CEP errors: invalid format → `400`, CEP not found → `404`, ViaCEP unreachable → `502`.
