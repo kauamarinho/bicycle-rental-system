@@ -27,6 +27,10 @@ public class RentalService {
             throw new RentalException("Bicycle is already rented.");
         }
 
+        if (bicycle.getStatus() == BicycleStatus.RESERVED) {
+            throw new RentalException("Bicycle is reserved.");
+        }
+
         if (bicycle.getStatus() == BicycleStatus.REMOVED) {
             throw new RentalException("Bicycle has been removed from the system.");
         }

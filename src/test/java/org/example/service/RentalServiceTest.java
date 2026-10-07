@@ -9,6 +9,7 @@ import org.example.repository.RentalRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
@@ -39,20 +40,14 @@ class RentalServiceTest {
         assertEquals(1, rentalService.findAll().size());
     }
 
-    @Test
-    void rentBicycle_withAlreadyRentedBicycle_shouldThrowRentalException() {
-        bicycle.changeStatus(BicycleStatus.RENTED);
+    @ParameterizedTest
+    @EnumSource(value = BicycleStatus.class, mode = EnumSource.Mode.EXCLUDE, names = "AVAILABLE")
+    void rentBicycle_withUnavailableBicycle_shouldThrowRentalException(BicycleStatus status) {
+        bicycle.changeStatus(status);
 
         assertThrows(RentalException.class,
                 () -> rentalService.rentBicycle(customer, bicycle, LocalDate.of(2026, 8, 12)));
-    }
-
-    @Test
-    void rentBicycle_withRemovedBicycle_shouldThrowRentalException() {
-        bicycle.changeStatus(BicycleStatus.REMOVED);
-
-        assertThrows(RentalException.class,
-                () -> rentalService.rentBicycle(customer, bicycle, LocalDate.of(2026, 8, 12)));
+        assertTrue(rentalService.findAll().isEmpty());
     }
 
     @ParameterizedTest

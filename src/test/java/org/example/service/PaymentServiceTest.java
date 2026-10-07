@@ -38,19 +38,10 @@ class PaymentServiceTest {
         Rental rental = new Rental(1, customer, bicycle, LocalDate.of(2026, 8, 12));
         rental.finishRental(LocalDate.of(2026, 8, 12), 3);
 
-        Payment payment = paymentService.makePayment(rental, PaymentMethod.PIX);
+        Payment payment = paymentService.makePayment(rental, PaymentMethod.CREDIT_CARD);
 
         assertEquals("Confirmed", payment.getStatus());
         assertEquals(15.0, payment.getAmount());
-    }
-
-    @Test
-    void makePayment_shouldGenerateReceiptWithGivenPaymentMethod() {
-        Rental rental = new Rental(1, customer, bicycle, LocalDate.of(2026, 8, 12));
-        rental.finishRental(LocalDate.of(2026, 8, 12), 2);
-
-        Payment payment = paymentService.makePayment(rental, PaymentMethod.CREDIT_CARD);
-
         assertTrue(payment.generateReceipt().contains("CREDIT_CARD"));
     }
 }

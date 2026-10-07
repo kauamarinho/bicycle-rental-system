@@ -8,6 +8,8 @@ import org.example.repository.inmemory.InMemoryReservationRepository;
 import org.example.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.time.LocalDate;
 
@@ -38,25 +40,10 @@ class ReservationServiceTest {
         assertEquals(1, reservationService.findAll().size());
     }
 
-    @Test
-    void makeReservation_withAlreadyRentedBicycle_shouldThrowRentalException() {
-        bicycle.changeStatus(BicycleStatus.RENTED);
-
-        assertThrows(RentalException.class,
-                () -> reservationService.makeReservation(customer, bicycle, LocalDate.of(2026, 8, 12)));
-    }
-
-    @Test
-    void makeReservation_withAlreadyReservedBicycle_shouldThrowRentalException() {
-        bicycle.changeStatus(BicycleStatus.RESERVED);
-
-        assertThrows(RentalException.class,
-                () -> reservationService.makeReservation(customer, bicycle, LocalDate.of(2026, 8, 12)));
-    }
-
-    @Test
-    void makeReservation_withRemovedBicycle_shouldThrowRentalException() {
-        bicycle.changeStatus(BicycleStatus.REMOVED);
+    @ParameterizedTest
+    @EnumSource(value = BicycleStatus.class, mode = EnumSource.Mode.EXCLUDE, names = "AVAILABLE")
+    void makeReservation_withUnavailableBicycle_shouldThrowRentalException(BicycleStatus status) {
+        bicycle.changeStatus(status);
 
         assertThrows(RentalException.class,
                 () -> reservationService.makeReservation(customer, bicycle, LocalDate.of(2026, 8, 12)));

@@ -14,7 +14,8 @@ import org.example.domain.model.Reservation;
 import java.time.LocalDate;
 
 /** Request and response payloads of the REST API. */
-public final class ApiDtos {
+public final class
+ApiDtos {
 
     private ApiDtos() {
     }

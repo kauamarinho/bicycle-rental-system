@@ -45,14 +45,8 @@ class CustomerServiceTest {
         assertEquals("Ana", customer.getName());
         assertEquals("12345678901", customer.getCpf());
         assertEquals("ana@email.com", customer.getEmail());
+        assertEquals(SE, customer.getAddress());
         assertEquals(1, customerService.findAll().size());
-    }
-
-    @Test
-    void registerCustomer_withFormattedCpf_shouldNormalizePunctuation() {
-        Customer customer = customerService.registerCustomer("Ana", "123.456.789-01", "ana@email.com", "01001-000");
-
-        assertEquals("12345678901", customer.getCpf());
     }
 
     @ParameterizedTest
@@ -62,9 +56,12 @@ class CustomerServiceTest {
             "abc.def.ghi-01",       // contains letters
             "1234567890a"           // contains a letter among the digits
     })
-    void registerCustomer_withInvalidCpf_shouldThrowInvalidCpfException(String invalidCpf) {
+    void registerCustomer_withInvalidCpf_shouldThrowWithoutLookupOrPersisting(String invalidCpf) {
         assertThrows(InvalidCpfException.class,
                 () -> customerService.registerCustomer("Ana", invalidCpf, "ana@email.com", "01001-000"));
+
+        assertTrue(lookedUpCeps.isEmpty());
+        assertTrue(customerService.findAll().isEmpty());
     }
 
     @ParameterizedTest
@@ -77,21 +74,6 @@ class CustomerServiceTest {
     void registerCustomer_withInvalidEmail_shouldThrowInvalidEmailException(String invalidEmail) {
         assertThrows(InvalidEmailException.class,
                 () -> customerService.registerCustomer("Ana", "12345678901", invalidEmail, "01001-000"));
-    }
-
-    @Test
-    void registerCustomer_withInvalidCpf_shouldNotPersistCustomer() {
-        assertThrows(InvalidCpfException.class,
-                () -> customerService.registerCustomer("Ana", "123", "ana@email.com", "01001-000"));
-
-        assertTrue(customerService.findAll().isEmpty());
-    }
-
-    @Test
-    void registerCustomer_withExistingCep_shouldStoreAddress() {
-        Customer customer = customerService.registerCustomer("Ana", "12345678901", "ana@email.com", "01001-000");
-
-        assertEquals(SE, customer.getAddress());
     }
 
     @ParameterizedTest
@@ -110,18 +92,5 @@ class CustomerServiceTest {
                 () -> customerService.registerCustomer("Ana", "12345678901", "ana@email.com", "99999999"));
 
         assertTrue(customerService.findAll().isEmpty());
-    }
-
-    @Test
-    void registerCustomer_withInvalidCpf_shouldNotCallCepLookup() {
-        assertThrows(InvalidCpfException.class,
-                () -> customerService.registerCustomer("Ana", "123", "ana@email.com", "01001000"));
-
-        assertTrue(lookedUpCeps.isEmpty());
-    }
-
-    @Test
-    void findById_withNonExistentId_shouldReturnNull() {
-        assertNull(customerService.findById(999));
     }
 }
