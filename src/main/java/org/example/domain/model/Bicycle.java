@@ -1,16 +1,31 @@
 package org.example.domain.model;
 
+import jakarta.persistence.*;
 import org.example.domain.enums.BicycleStatus;
 
+@Entity
+@Table(name = "bicycles")
 public class Bicycle implements Registrable {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
     private String model;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BicycleStatus status;
+
+    @Column(nullable = false)
     private double hourlyRate;
 
-    public Bicycle(int id, String model, BicycleStatus status, double hourlyRate) {
-        this.id = id;
+    protected Bicycle() {
+        // required by JPA
+    }
+
+    public Bicycle(String model, BicycleStatus status, double hourlyRate) {
         this.model = model;
         this.status = status;
         this.hourlyRate = hourlyRate;
@@ -34,7 +49,7 @@ public class Bicycle implements Registrable {
     }
 
     @Override
-    public int getId() { return id; }
+    public Integer getId() { return id; }
 
     @Override
     public String getName() { return model; }

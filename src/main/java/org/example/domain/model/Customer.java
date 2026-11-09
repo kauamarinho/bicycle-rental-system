@@ -1,27 +1,45 @@
 package org.example.domain.model;
 
+import jakarta.persistence.*;
 import org.example.domain.vo.Cpf;
 import org.example.domain.vo.Email;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "customers")
 public class Customer implements Registrable {
 
-    private int id;
-    private String name;
-    private Cpf cpf;
-    private Email email;
-    private Address address;
-    private List<Reservation> reservations;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    public Customer(int id, String name, Cpf cpf, Email email, Address address) {
-        this.id = id;
+    @Column(nullable = false)
+    private String name;
+
+    // stored through CpfConverter / EmailConverter (autoApply)
+    @Column(nullable = false, unique = true, length = 11)
+    private Cpf cpf;
+
+    @Column(nullable = false)
+    private Email email;
+
+    @Embedded
+    private Address address;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Reservation> reservations = new ArrayList<>();
+
+    protected Customer() {
+        // required by JPA
+    }
+
+    public Customer(String name, Cpf cpf, Email email, Address address) {
         this.name = name;
         this.cpf = cpf;
         this.email = email;
         this.address = address;
-        this.reservations = new ArrayList<>();
     }
 
     public void addReservation(Reservation reservation) {
@@ -42,7 +60,7 @@ public class Customer implements Registrable {
     }
 
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

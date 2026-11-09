@@ -28,7 +28,7 @@ public class Employee implements Registrable {
     }
 
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

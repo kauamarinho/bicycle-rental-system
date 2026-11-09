@@ -1,20 +1,39 @@
 package org.example.domain.model;
 
+import jakarta.persistence.*;
 import org.example.domain.enums.BicycleStatus;
 import org.example.domain.enums.ReservationStatus;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "reservations")
 public class Reservation {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "bicycle_id", nullable = false)
     private Bicycle bicycle;
+
+    @Column(nullable = false)
     private LocalDate reservationDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ReservationStatus status;
 
-    public Reservation(int id, Customer customer, Bicycle bicycle, LocalDate reservationDate) {
-        this.id = id;
+    protected Reservation() {
+        // required by JPA
+    }
+
+    public Reservation(Customer customer, Bicycle bicycle, LocalDate reservationDate) {
         this.customer = customer;
         this.bicycle = bicycle;
         this.reservationDate = reservationDate;
@@ -35,7 +54,7 @@ public class Reservation {
                 + " | Status: " + status;
     }
 
-    public int getId() { return id; }
+    public Integer getId() { return id; }
     public Customer getCustomer() { return customer; }
     public Bicycle getBicycle() { return bicycle; }
     public LocalDate getReservationDate() { return reservationDate; }

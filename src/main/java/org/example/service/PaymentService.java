@@ -1,23 +1,34 @@
 package org.example.service;
 
-import org.springframework.stereotype.Service;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.example.domain.exception.RentalException;
+import lombok.RequiredArgsConstructor;
 import org.example.domain.enums.PaymentMethod;
-import org.example.domain.model.Rental;
-import org.example.domain.model.Payment;
 import org.example.domain.enums.RentalStatus;
+import org.example.domain.exception.RentalException;
+import org.example.domain.model.Payment;
+import org.example.domain.model.Rental;
+import org.example.repository.PaymentRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
 
-    private final AtomicInteger nextId = new AtomicInteger(1);
+    private final PaymentRepository paymentRepository;
+    private final RentalService rentalService;
 
-    public Payment makePayment(Rental rental, PaymentMethod paymentMethod) {
+    @Transactional
+    public Payment makePayment(int rentalId, PaymentMethod paymentMethod) {
+        Rental rental = rentalService.findById(rentalId);
+
         if (rental.getStatus() != RentalStatus.FINISHED) {
             throw new RentalException("The rental must be finished before a payment can be made.");
         }
-        Payment payment = new Payment(nextId.getAndIncrement(), rental, paymentMethod);
-        return payment;
+
+        if (paymentRepository.existsByRentalId(rental.getId())) {
+            throw new RentalException("This rental has already been paid.");
+        }
+
+        return paymentRepository.save(new Payment(rental, paymentMethod));
     }
 }

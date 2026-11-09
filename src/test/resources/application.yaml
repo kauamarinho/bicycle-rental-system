@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: bicycle-rental-system
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  docker:
+    compose:
+      enabled: false
+
+viacep:
+  base-url: http://localhost:0

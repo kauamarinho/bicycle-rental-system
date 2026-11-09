@@ -1,17 +1,35 @@
 package org.example.domain.model;
 
+import jakarta.persistence.*;
 import org.example.domain.enums.PaymentMethod;
 
+@Entity
+@Table(name = "payments")
 public class Payment {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "rental_id", nullable = false, unique = true)
     private Rental rental;
+
+    @Column(nullable = false)
     private double amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PaymentMethod paymentMethod;
+
+    @Column(nullable = false)
     private String status;
 
-    public Payment(int id, Rental rental, PaymentMethod paymentMethod) {
-        this.id = id;
+    protected Payment() {
+        // required by JPA
+    }
+
+    public Payment(Rental rental, PaymentMethod paymentMethod) {
         this.rental = rental;
         this.amount = rental.getTotalAmount();
         this.paymentMethod = paymentMethod;
@@ -27,12 +45,16 @@ public class Payment {
                 + "\nStatus: " + status;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
     public double getAmount() {
         return amount;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
     }
 
     public String getStatus() {

@@ -1,13 +1,14 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.example.domain.exception.NotFoundException;
 import org.example.domain.exception.RentalException;
 import org.example.domain.model.Bicycle;
 import org.example.domain.model.Customer;
 import org.example.domain.model.Reservation;
 import org.example.repository.ReservationRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,28 +18,37 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final AtomicInteger nextId = new AtomicInteger(1);
+    private final CustomerService customerService;
+    private final BicycleService bicycleService;
 
-    public Reservation makeReservation(Customer customer, Bicycle bicycle, LocalDate reservationDate) {
+    @Transactional
+    public Reservation makeReservation(int customerId, int bicycleId, LocalDate reservationDate) {
+        Customer customer = customerService.findById(customerId);
+        Bicycle bicycle = bicycleService.findById(bicycleId);
+
         if (!bicycle.isAvailable()) {
             throw new RentalException("Bicycle is not available for reservation.");
         }
-        Reservation reservation = new Reservation(nextId.getAndIncrement(), customer, bicycle, reservationDate);
+
+        Reservation reservation = new Reservation(customer, bicycle, reservationDate);
         customer.addReservation(reservation);
-        reservationRepository.save(reservation);
+        return reservationRepository.save(reservation);
+    }
+
+    @Transactional
+    public Reservation cancelReservation(int reservationId) {
+        Reservation reservation = findById(reservationId);
+        reservation.cancel();
         return reservation;
     }
 
-    public void cancelReservation(int reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new RentalException("Reservation not found."));
-        reservation.cancel();
-    }
-
+    @Transactional(readOnly = true)
     public Reservation findById(int id) {
-        return reservationRepository.findById(id).orElse(null);
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Reservation not found."));
     }
 
+    @Transactional(readOnly = true)
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }

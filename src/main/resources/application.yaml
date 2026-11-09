@@ -1,6 +1,14 @@
 spring:
   application:
     name: bicycle-rental-system
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/bicycle_rental}
+    username: ${DB_USERNAME:bike}
+    password: ${DB_PASSWORD:bike}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
 
 viacep:
   base-url: https://viacep.com.br/ws

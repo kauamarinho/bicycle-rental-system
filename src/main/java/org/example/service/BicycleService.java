@@ -1,11 +1,13 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.example.domain.model.Bicycle;
 import org.example.domain.enums.BicycleStatus;
+import org.example.domain.exception.NotFoundException;
+import org.example.domain.model.Bicycle;
 import org.example.repository.BicycleRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -13,19 +15,20 @@ import java.util.List;
 public class BicycleService {
 
     private final BicycleRepository bicycleRepository;
-    private final AtomicInteger nextId = new AtomicInteger(1);
 
+    @Transactional
     public Bicycle registerBicycle(String model, double hourlyRate) {
-        Bicycle bicycle = new Bicycle(nextId.getAndIncrement(), model, BicycleStatus.AVAILABLE, hourlyRate);
-        bicycleRepository.save(bicycle);
-        return bicycle;
+        return bicycleRepository.save(new Bicycle(model, BicycleStatus.AVAILABLE, hourlyRate));
     }
 
+    @Transactional(readOnly = true)
     public List<Bicycle> findAll() {
         return bicycleRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Bicycle findById(int id) {
-        return bicycleRepository.findById(id).orElse(null);
+        return bicycleRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Bicycle not found."));
     }
 }

@@ -1,14 +1,7 @@
 package org.example.repository;
 
 import org.example.domain.model.Bicycle;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BicycleRepository {
-
-    void save(Bicycle bicycle);
-
-    List<Bicycle> findAll();
-
-    Optional<Bicycle> findById(int id);
+public interface BicycleRepository extends JpaRepository<Bicycle, Integer> {
 }

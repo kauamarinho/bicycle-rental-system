@@ -2,7 +2,7 @@ package org.example.domain.model;
 
 public interface Registrable {
 
-    int getId();
+    Integer getId();
     String getName();
     String displayData();
 }

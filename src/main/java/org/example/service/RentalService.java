@@ -1,15 +1,16 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.example.domain.enums.BicycleStatus;
+import org.example.domain.enums.RentalStatus;
+import org.example.domain.exception.NotFoundException;
 import org.example.domain.exception.RentalException;
 import org.example.domain.model.Bicycle;
 import org.example.domain.model.Customer;
 import org.example.domain.model.Rental;
-import org.example.domain.enums.BicycleStatus;
-import org.example.domain.enums.RentalStatus;
 import org.example.repository.RentalRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,9 +20,13 @@ import java.util.List;
 public class RentalService {
 
     private final RentalRepository rentalRepository;
-    private final AtomicInteger nextId = new AtomicInteger(1);
+    private final CustomerService customerService;
+    private final BicycleService bicycleService;
 
-    public Rental rentBicycle(Customer customer, Bicycle bicycle, LocalDate pickupDate) {
+    @Transactional
+    public Rental rentBicycle(int customerId, int bicycleId, LocalDate pickupDate) {
+        Customer customer = customerService.findById(customerId);
+        Bicycle bicycle = bicycleService.findById(bicycleId);
 
         if (bicycle.getStatus() == BicycleStatus.RENTED) {
             throw new RentalException("Bicycle is already rented.");
@@ -35,19 +40,13 @@ public class RentalService {
             throw new RentalException("Bicycle has been removed from the system.");
         }
 
-        Rental rental = new Rental(
-                nextId.getAndIncrement(),
-                customer,
-                bicycle,
-                pickupDate
-        );
-
-        rentalRepository.save(rental);
-
-        return rental;
+        // the bicycle status change is persisted by dirty checking at commit
+        return rentalRepository.save(new Rental(customer, bicycle, pickupDate));
     }
 
-    public void returnBicycle(Rental rental, LocalDate returnDate, int hoursUsed) {
+    @Transactional
+    public Rental returnBicycle(int rentalId, LocalDate returnDate, int hoursUsed) {
+        Rental rental = findById(rentalId);
 
         if (rental.getStatus() != RentalStatus.IN_PROGRESS) {
             throw new RentalException("This rental is not in progress.");
@@ -58,12 +57,16 @@ public class RentalService {
         }
 
         rental.finishRental(returnDate, hoursUsed);
+        return rental;
     }
 
+    @Transactional(readOnly = true)
     public Rental findById(int id) {
-        return rentalRepository.findById(id).orElse(null);
+        return rentalRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Rental not found."));
     }
 
+    @Transactional(readOnly = true)
     public List<Rental> findAll() {
         return rentalRepository.findAll();
     }

@@ -1,14 +1,10 @@
 package org.example.repository;
 
 import org.example.domain.model.Customer;
-import java.util.List;
-import java.util.Optional;
+import org.example.domain.vo.Cpf;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CustomerRepository {
+public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
-    void save(Customer customer);
-
-    List<Customer> findAll();
-
-    Optional<Customer> findById(int id);
+    boolean existsByCpf(Cpf cpf);
 }

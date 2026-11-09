@@ -2,6 +2,7 @@ package org.example.handler;
 
 import org.example.dto.ApiDtos.ErrorResponse;
 import org.example.domain.exception.AddressLookupException;
+import org.example.domain.exception.DuplicateResourceException;
 import org.example.domain.exception.InvalidCepException;
 import org.example.domain.exception.InvalidCpfException;
 import org.example.domain.exception.InvalidEmailException;
@@ -20,12 +21,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(RentalException.class)
-    public ResponseEntity<ErrorResponse> handleRental(RentalException e) {
+    @ExceptionHandler({RentalException.class, DuplicateResourceException.class})
+    public ResponseEntity<ErrorResponse> handleConflict(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler({InvalidCpfException.class, InvalidEmailException.class, InvalidCepException.class})
+    @ExceptionHandler({InvalidCpfException.class, InvalidEmailException.class, InvalidCepException.class,
+            IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> handleInvalidInput(RuntimeException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
