@@ -12,3 +12,12 @@ spring:
 
 viacep:
   base-url: https://viacep.com.br/ws
+
+security:
+  jwt:
+    # HS256 needs at least 32 bytes. Always override JWT_SECRET outside local development.
+    secret: ${JWT_SECRET:dev-only-secret-change-me-0123456789-abcdefghij}
+    expiration: 1h
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:admin123}

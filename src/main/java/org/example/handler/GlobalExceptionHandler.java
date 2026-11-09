@@ -10,6 +10,7 @@ import org.example.domain.exception.NotFoundException;
 import org.example.domain.exception.RentalException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -35,5 +36,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AddressLookupException.class)
     public ResponseEntity<ErrorResponse> handleAddressLookup(AddressLookupException e) {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(new ErrorResponse(e.getMessage()));
+    }
+
+    /** Failed login (wrong username or password). Same message for both so usernames can't be probed. */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse("Invalid username or password."));
     }
 }

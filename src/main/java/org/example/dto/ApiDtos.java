@@ -10,6 +10,10 @@ import org.example.domain.model.Customer;
 import org.example.domain.model.Payment;
 import org.example.domain.model.Rental;
 import org.example.domain.model.Reservation;
+import org.example.security.AppUser;
+import org.example.security.Role;
+
+import java.time.Instant;
 import java.time.LocalDate;
 
 /** Request and response payloads of the REST API. */
@@ -28,6 +32,10 @@ public final class ApiDtos {
     public record ReturnRequest(LocalDate returnDate, int hoursUsed) {}
 
     public record PaymentRequest(PaymentMethod paymentMethod) {}
+
+    public record LoginRequest(String username, String password) {}
+
+    public record CreateUserRequest(String username, String password, Role role) {}
 
     public record ErrorResponse(String message) {}
 
@@ -72,6 +80,14 @@ public final class ApiDtos {
     public record PaymentResponse(int id, double amount, String status, String receipt) {
         public static PaymentResponse from(Payment p) {
             return new PaymentResponse(p.getId(), p.getAmount(), p.getStatus(), p.generateReceipt());
+        }
+    }
+
+    public record LoginResponse(String token, String tokenType, Instant expiresAt) {}
+
+    public record UserResponse(int id, String username, Role role) {
+        public static UserResponse from(AppUser u) {
+            return new UserResponse(u.getId(), u.getUsername(), u.getRole());
         }
     }
 }
